@@ -3,7 +3,7 @@ require "util/mount/miq_generic_mount_session"
 require "util/miq_object_storage"
 
 class MockLocalFileStorage < MiqObjectStorage
-  def initialize(source_path = nil, byte_count = 2.megabytes)
+  def initialize(source_path = nil, byte_count = 2 * 1024 * 1024)
     @byte_count   = byte_count
     @source_input = File.open(source_path, "rb") if source_path
     @root_dir     = Dir.tmpdir
@@ -32,13 +32,13 @@ describe MiqObjectStorage do
 
       expected_splitfiles.each do |filename|
         expect(File.exist?(filename)).to be true
-        expect(Pathname.new(filename).lstat.size).to eq(2.megabytes)
+        expect(Pathname.new(filename).lstat.size).to eq(two_megabytes)
       end
     end
 
     context "with slightly a slightly smaller input file than 10MB" do
-      let(:tmpfile_size) { 10.megabytes - 1.kilobyte }
-      subject            { MockLocalFileStorage.new source_path, 1.megabyte }
+      let(:tmpfile_size) { ten_megabytes - one_kilobyte }
+      subject            { MockLocalFileStorage.new source_path, one_megabyte }
 
       it "properly chunks the file" do
         expected_splitfiles = (1..10).map do |suffix|
@@ -51,12 +51,12 @@ describe MiqObjectStorage do
 
         expected_splitfiles[0, 9].each do |filename|
           expect(File.exist?(filename)).to be true
-          expect(File.size(filename)).to eq(1.megabytes)
+          expect(File.size(filename)).to eq(one_megabyte)
         end
 
         last_split = expected_splitfiles.last
         expect(File.exist?(last_split)).to be true
-        expect(File.size(last_split)).to eq(1.megabyte - 1.kilobyte)
+        expect(File.size(last_split)).to eq(one_megabyte - one_kilobyte)
       end
     end
 
@@ -85,8 +85,8 @@ describe MiqObjectStorage do
     end
 
     it "reads the amount of data equal to chunksize when that is passed" do
-      chunk_of_data = subject.send(:read_single_chunk, 1.kilobyte)
-      expect(chunk_of_data).to eq("0" * 1.kilobyte)
+      chunk_of_data = subject.send(:read_single_chunk, one_kilobyte)
+      expect(chunk_of_data).to eq("0" * one_kilobyte)
     end
 
     context "near the end of the split file" do
@@ -95,7 +95,7 @@ describe MiqObjectStorage do
 
       before do
         # read an odd amount of data
-        read_times = 2.megabytes / chunksize
+        read_times = two_megabytes / chunksize
         (read_times - 1).times { subject.send(:read_single_chunk) }
         subject.send(:read_single_chunk, penultimate_chunkize)
       end

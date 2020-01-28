@@ -1,5 +1,9 @@
+require "support/contexts/file_sizes"
+
 shared_context "generated tmp files" do
-  let!(:tmpfile_size) { 10.megabytes }
+  include_context "file sizes"
+
+  let!(:tmpfile_size) { 10 * one_megabyte }
   let!(:source_path)  { Pathname.new(source_file.path) }
   let!(:source_file) do
     Tempfile.new("source_file").tap do |file|

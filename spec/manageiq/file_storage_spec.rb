@@ -260,7 +260,7 @@ describe MiqFileStorage do
           let(:upload_args) { [local_io, remote_path, byte_count_str] }
 
           it "assigns @byte_count to the parse value" do
-            expect(subject.byte_count).to eq(5.megabytes)
+            expect(subject.byte_count).to eq(5 * 1048576)
           end
 
           it "assigns @source_input to the passed value" do
@@ -276,7 +276,7 @@ describe MiqFileStorage do
           let(:upload_args) { [local_io_str, remote_path, byte_count_str] }
 
           it "assigns @byte_count to the parse value" do
-            expect(subject.byte_count).to eq(5.megabytes)
+            expect(subject.byte_count).to eq(5 * 1048576)
           end
 
           it "assigns @source_input to the passed value" do
@@ -343,12 +343,14 @@ describe MiqFileStorage do
     end
 
     describe "#parse_byte_value (private)" do
+      include_context "file sizes"
+
       it "returns 2 for '2'" do
         expect(subject.send(:parse_byte_value, "2")).to eq(2)
       end
 
       it "returns 2048 for '2k'" do
-        expect(subject.send(:parse_byte_value, "2k")).to eq(2048)
+        expect(subject.send(:parse_byte_value, "2k")).to eq(2 * one_kilobyte)
       end
 
       it "returns 1536 for '1.5K'" do
@@ -356,11 +358,11 @@ describe MiqFileStorage do
       end
 
       it "returns 3145728 for '3M'" do
-        expect(subject.send(:parse_byte_value, "3M")).to eq(3.megabytes)
+        expect(subject.send(:parse_byte_value, "3M")).to eq(3 * one_megabyte)
       end
 
       it "returns 1073741824 for '1g'" do
-        expect(subject.send(:parse_byte_value, "1g")).to eq(1.gigabyte)
+        expect(subject.send(:parse_byte_value, "1g")).to eq(one_gigabyte)
       end
 
       it "returns nil for nil" do

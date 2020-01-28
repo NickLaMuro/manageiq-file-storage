@@ -13,7 +13,7 @@ describe MiqFtpStorage, :with_ftp_server do
       it "copies single files" do
         expect(subject.add(source_path.to_s, dest_path.to_s)).to eq(dest_path.to_s)
         expect(dest_path).to exist_on_ftp_server
-        expect(dest_path).to have_size_on_ftp_server_of(10.megabytes)
+        expect(dest_path).to have_size_on_ftp_server_of(ten_megabytes)
       end
 
       it "copies file to splits" do
@@ -27,7 +27,7 @@ describe MiqFtpStorage, :with_ftp_server do
 
         expected_splitfiles.each do |filename|
           expect(filename).to exist_on_ftp_server
-          expect(filename).to have_size_on_ftp_server_of(2.megabytes)
+          expect(filename).to have_size_on_ftp_server_of(two_megabytes)
         end
       end
 
@@ -42,12 +42,12 @@ describe MiqFtpStorage, :with_ftp_server do
 
         expected_splitfiles.each do |filename|
           expect(filename).to exist_on_ftp_server
-          expect(filename).to have_size_on_ftp_server_of(2.megabytes)
+          expect(filename).to have_size_on_ftp_server_of(two_megabytes)
         end
       end
 
       context "with slightly a slightly smaller input file than 10MB" do
-        let(:tmpfile_size) { 10.megabytes - 1.kilobyte }
+        let(:tmpfile_size) { ten_megabytes - one_kilobyte }
 
         it "properly chunks the file" do
           expected_splitfiles = (1..10).map do |suffix|
@@ -55,16 +55,16 @@ describe MiqFtpStorage, :with_ftp_server do
           end
 
           # using pathnames this time
-          subject.add(source_path, dest_path.to_s, 1.megabyte)
+          subject.add(source_path, dest_path.to_s, one_megabyte)
 
           expected_splitfiles[0, 9].each do |filename|
             expect(filename).to exist_on_ftp_server
-            expect(filename).to have_size_on_ftp_server_of(1.megabytes)
+            expect(filename).to have_size_on_ftp_server_of(one_megabyte)
           end
 
           last_split = expected_splitfiles.last
           expect(last_split).to exist_on_ftp_server
-          expect(last_split).to have_size_on_ftp_server_of(1.megabyte - 1.kilobyte)
+          expect(last_split).to have_size_on_ftp_server_of(one_megabyte - one_kilobyte)
         end
       end
     end
@@ -83,8 +83,10 @@ describe MiqFtpStorage, :with_ftp_server do
   end
 
   describe "#download" do
+    include_context "file sizes"
+
     let(:dest_path)   { Dir::Tmpname.create("") { |name| name } }
-    let(:source_file) { existing_ftp_file(10.megabytes) }
+    let(:source_file) { existing_ftp_file(ten_megabytes) }
     let(:source_path) { File.basename(source_file.path) }
 
     after { File.delete(dest_path) if File.exist?(dest_path) }
@@ -94,10 +96,10 @@ describe MiqFtpStorage, :with_ftp_server do
 
       # Sanity check that what we are downloading is the size we expect
       expect(source_path).to exist_on_ftp_server
-      expect(source_path).to have_size_on_ftp_server_of(10.megabytes)
+      expect(source_path).to have_size_on_ftp_server_of(ten_megabytes)
 
       expect(File.exist?(dest_path)).to be true
-      expect(File.stat(dest_path).size).to eq(10.megabytes)
+      expect(File.stat(dest_path).size).to eq(ten_megabytes)
     end
 
     it "can take input from a command" do
@@ -110,15 +112,17 @@ describe MiqFtpStorage, :with_ftp_server do
       # (and we didn't actually download the file to disk)
       expect(File.exist?(dest_path)).to be false
       expect(source_path).to exist_on_ftp_server
-      expect(source_path).to have_size_on_ftp_server_of(10.megabytes)
+      expect(source_path).to have_size_on_ftp_server_of(ten_megabytes)
 
       # Nothing written, just printed the streamed file in the above command
-      expect(source_data.size).to eq(10.megabytes)
+      expect(source_data.size).to eq(ten_megabytes)
     end
   end
 
   describe "#magic_number_for" do
-    let(:source_file) { existing_ftp_file(10.megabytes) }
+    include_context "file sizes"
+
+    let(:source_file) { existing_ftp_file(ten_megabytes) }
     let(:source_path) { File.basename(source_file.path) }
 
     it "returns 256 bytes by default" do

@@ -12,7 +12,7 @@ describe MiqLocalMountSession do
     it "copies single files" do
       expect(subject.add(source_path.to_s, dest_path.to_s)).to eq(dest_path.to_s)
       expect(File.exist?(dest_path)).to be true
-      expect(Pathname.new(dest_path).lstat.size).to eq(10.megabytes)
+      expect(Pathname.new(dest_path).lstat.size).to eq(ten_megabytes)
     end
 
     it "copies file to splits" do
@@ -26,7 +26,7 @@ describe MiqLocalMountSession do
 
       expected_splitfiles.each do |filename|
         expect(File.exist?(filename)).to be true
-        expect(Pathname.new(filename).lstat.size).to eq(2.megabytes)
+        expect(Pathname.new(filename).lstat.size).to eq(two_megabytes)
       end
     end
 
@@ -41,12 +41,12 @@ describe MiqLocalMountSession do
 
       expected_splitfiles.each do |filename|
         expect(File.exist?(filename)).to be true
-        expect(Pathname.new(filename).lstat.size).to eq(2.megabytes)
+        expect(Pathname.new(filename).lstat.size).to eq(two_megabytes)
       end
     end
 
     context "with a slightly smaller input file than 10MB" do
-      let(:tmpfile_size) { 10.megabytes - 1.kilobyte }
+      let(:tmpfile_size) { ten_megabytes - one_kilobyte }
 
       it "properly chunks the file" do
         expected_splitfiles = (1..10).map do |suffix|
@@ -55,16 +55,16 @@ describe MiqLocalMountSession do
         end
 
         # using pathnames this time
-        subject.add(source_path, dest_path.to_s, 1.megabyte)
+        subject.add(source_path, dest_path.to_s, one_megabyte)
 
         expected_splitfiles[0, 9].each do |filename|
           expect(File.exist?(filename)).to be true
-          expect(Pathname.new(filename).lstat.size).to eq(1.megabyte)
+          expect(Pathname.new(filename).lstat.size).to eq(one_megabyte)
         end
 
         last_split = expected_splitfiles.last
         expect(File.exist?(last_split)).to be true
-        expect(Pathname.new(last_split).lstat.size).to eq(1.megabyte - 1.kilobyte)
+        expect(Pathname.new(last_split).lstat.size).to eq(one_megabyte - one_kilobyte)
       end
     end
   end
@@ -75,7 +75,7 @@ describe MiqLocalMountSession do
     it "downloads the file" do
       subject.download(dest_path.to_s, source_path.to_s)
       expect(File.exist?(dest_path)).to be true
-      expect(Pathname.new(dest_path).lstat.size).to eq(10.megabytes)
+      expect(Pathname.new(dest_path).lstat.size).to eq(ten_megabytes)
     end
 
     it "can take input from a command" do
@@ -85,7 +85,7 @@ describe MiqLocalMountSession do
       end
 
       expect(File.exist?(dest_path)).to be false
-      expect(source_data.size).to eq(10.megabytes)
+      expect(source_data.size).to eq(ten_megabytes)
       expect(source_data).to eq(File.read(source_path))
     end
   end
