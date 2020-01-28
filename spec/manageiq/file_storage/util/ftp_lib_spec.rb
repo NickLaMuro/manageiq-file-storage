@@ -1,8 +1,8 @@
-require 'util/miq_ftp_lib'
+require "manageiq/file_storage/util/ftp_lib"
 require 'logger' # probably loaded elsewhere, but for the below classes
 
 class FTPKlass
-  include MiqFtpLib
+  include ManageIQ::FileStorage::Util::FtpLib
 
   attr_accessor :uri
 
@@ -18,7 +18,7 @@ class FTPKlass
 end
 
 class OtherFTPKlass
-  include MiqFtpLib
+  include ManageIQ::FileStorage::Util::FtpLib
 
   attr_accessor :uri
 
@@ -99,7 +99,7 @@ shared_examples "with a connection" do |valid_cred_hash|
   end
 end
 
-describe MiqFtpLib do
+describe ManageIQ::FileStorage::Util::FtpLib do
   subject { FTPKlass.new }
 
   describe "when included" do

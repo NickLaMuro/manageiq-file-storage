@@ -1,7 +1,7 @@
-require "util/mount/miq_generic_mount_session"
-require "util/miq_object_storage"
+require "manageiq/file_storage/mount_storage"
+require "manageiq/file_storage/object_storage"
 
-describe MiqFileStorage do
+describe ManageIQ::FileStorage do
   def opts_for_nfs
     opts[:uri] = "nfs://example.com/share/path/to/file.txt"
   end
@@ -67,46 +67,46 @@ describe MiqFileStorage do
     context "with an nfs:// uri" do
       before { opts_for_nfs }
 
-      include_examples ".with_interface_class implementation", "MiqNfsSession"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::MountStorage::NFS"
     end
 
     context "with an smb:// uri" do
       before { opts_for_smb }
 
-      include_examples ".with_interface_class implementation", "MiqSmbSession"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::MountStorage::SMB"
     end
 
     context "with an glusterfs:// uri" do
       before { opts_for_glusterfs }
 
-      include_examples ".with_interface_class implementation", "MiqGlusterfsSession"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::MountStorage::GlusterFS"
     end
 
     context "with an ftp:// uri" do
       before { opts_for_ftp }
 
-      include_examples ".with_interface_class implementation", "MiqFtpStorage"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::ObjectStorage::FTP"
     end
 
     context "with an swift:// uri" do
       before { opts_for_swift_with_params }
 
-      include_examples ".with_interface_class implementation", "MiqSwiftStorage"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::ObjectStorage::Swift"
     end
 
     context "with an swift:// uri and no query params" do
       before { opts_for_swift_without_params }
 
-      include_examples ".with_interface_class implementation", "MiqSwiftStorage"
+      include_examples ".with_interface_class implementation", "ManageIQ::FileStorage::ObjectStorage::Swift"
     end
 
     context "with an unknown uri scheme" do
       before { opts_for_fakefs }
 
-      it "raises an MiqFileStorage::InvalidSchemeError" do
-        valid_schemes = MiqFileStorage.storage_interface_classes.keys
-        error_class   = MiqFileStorage::InvalidSchemeError
-        error_message = "foo is not a valid MiqFileStorage uri scheme. Accepted schemes are #{valid_schemes}"
+      it "raises an ManageIQ::FileStorage::InvalidSchemeError" do
+        valid_schemes = ManageIQ::FileStorage.storage_interface_classes.keys
+        error_class   = ManageIQ::FileStorage::InvalidSchemeError
+        error_message = "foo is not a valid ManageIQ::FileStorage uri scheme. Accepted schemes are #{valid_schemes}"
 
         expect { described_class.with_interface_class(opts) }.to raise_error(error_class).with_message(error_message)
       end
@@ -115,13 +115,13 @@ describe MiqFileStorage do
 
   ##### Interface Methods #####
 
-  describe MiqFileStorage::Interface do
+  describe ManageIQ::FileStorage::Interface do
     shared_examples "an interface method" do |method_str, *args|
       subject      { method_str[0] == "#" ? described_class.new : described_class }
       let(:method) { method_str[1..-1] }
 
       it "raises NotImplementedError" do
-        expected_error_message = "MiqFileStorage::Interface#{method_str} is not defined"
+        expected_error_message = "ManageIQ::FileStorage::Interface#{method_str} is not defined"
         expect { subject.send(method, *args) }.to raise_error(NotImplementedError, expected_error_message)
       end
     end
