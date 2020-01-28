@@ -1,6 +1,6 @@
-require "util/mount/miq_generic_mount_session"
+require "manageiq/file_storage/mount_storage"
 
-describe MiqGenericMountSession do
+describe ManageIQ::FileStorage::MountStorage do
   it "#connect returns a string pointing to the mount point" do
     allow(described_class).to receive(:raw_disconnect)
     s = described_class.new(:uri => '/tmp/abc')

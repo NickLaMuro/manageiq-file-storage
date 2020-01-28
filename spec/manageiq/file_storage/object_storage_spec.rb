@@ -1,8 +1,9 @@
 require "fileutils"
-require "util/mount/miq_generic_mount_session"
-require "util/miq_object_storage"
 
-class MockLocalFileStorage < MiqObjectStorage
+require "manageiq/file_storage/mount_storage"
+require "manageiq/file_storage/object_storage"
+
+class MockLocalFileStorage < ManageIQ::FileStorage::ObjectStorage
   def initialize(source_path = nil, byte_count = 2 * 1024 * 1024)
     @byte_count   = byte_count
     @source_input = File.open(source_path, "rb") if source_path
@@ -14,7 +15,7 @@ class MockLocalFileStorage < MiqObjectStorage
   end
 end
 
-describe MiqObjectStorage do
+describe ManageIQ::FileStorage::ObjectStorage do
   describe "#write_single_split_file_for (private)" do
     include_context "generated tmp files"
 

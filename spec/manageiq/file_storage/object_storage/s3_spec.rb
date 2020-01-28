@@ -1,6 +1,6 @@
-require "util/object_storage/miq_s3_storage"
+require "manageiq/file_storage/object_storage/s3"
 
-describe MiqS3Storage do
+describe ManageIQ::FileStorage::ObjectStorage::S3 do
   before(:each) do
     @uri = "s3://tmp/abc/def"
     @session = described_class.new(:uri => @uri, :username => 'user', :password => 'pass', :region => 'region')

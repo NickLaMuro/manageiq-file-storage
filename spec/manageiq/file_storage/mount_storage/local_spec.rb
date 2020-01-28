@@ -1,7 +1,7 @@
-require 'util/mount/miq_local_mount_session'
+require "manageiq/file_storage/mount_storage/local"
 require 'tempfile'
 
-describe MiqLocalMountSession do
+describe ManageIQ::FileStorage::MountStorage::Local do
   let!(:dest_path) { Pathname.new(Dir::Tmpname.create("") {}) }
 
   subject { described_class.new(:uri => "file://") }

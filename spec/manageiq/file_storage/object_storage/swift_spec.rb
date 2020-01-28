@@ -1,6 +1,6 @@
-require "util/object_storage/miq_swift_storage"
+require "manageiq/file_storage/object_storage/swift"
 
-describe MiqSwiftStorage do
+describe ManageIQ::FileStorage::ObjectStorage::Swift do
   let(:object_storage) { described_class.new(:uri => uri, :username => 'user', :password => 'pass') }
 
   describe "#initialize" do
