@@ -1,5 +1,3 @@
-# TODO:  Remove the need for `.blank?` maybe?
-require 'active_support/core_ext/object/blank'
 require 'fileutils'
 require 'tempfile'
 require 'pathname'
@@ -488,7 +486,8 @@ module ManageIQ
       end
 
       def settings_mount_point
-        return nil if @settings[:mount_point].blank? # Check if settings contains the mount_point to use
+        # Check if settings contains the mount_point to use
+        return nil if @settings[:mount_point].nil? || @settings[:mount_point] == ""
         FileUtils.mkdir_p(@settings[:mount_point]).first
       end
 

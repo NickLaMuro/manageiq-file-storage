@@ -8,7 +8,7 @@ describe ManageIQ::FileStorage::MountStorage do
 
     result = s.connect
     expect(result).to     be_kind_of(String)
-    expect(result).to_not be_blank
+    expect(result).to_not eq("")
 
     s.disconnect
   end
