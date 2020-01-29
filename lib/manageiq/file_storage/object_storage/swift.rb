@@ -186,6 +186,8 @@ module ManageIQ
           raise err, msg, err.backtrace
         end
       end
+
+      register_file_storage Swift
     end
   end
 end

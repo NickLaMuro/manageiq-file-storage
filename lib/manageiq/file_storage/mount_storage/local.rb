@@ -30,6 +30,8 @@ module ManageIQ
           File.expand_path(remote_file)
         end
       end
+
+      register_file_storage Local
     end
   end
 end

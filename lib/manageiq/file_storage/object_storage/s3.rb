@@ -106,6 +106,8 @@ module ManageIQ
           raise err, msg, err.backtrace
         end
       end
+
+      register_file_storage S3
     end
   end
 end

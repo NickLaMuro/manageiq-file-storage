@@ -1,5 +1,7 @@
 require 'logger'
 
+require 'manageiq/file_storage/type_registry'
+
 module ManageIQ
   module FileStorage
     # This class is meant to be an abstract interface for defining a
@@ -25,6 +27,8 @@ module ManageIQ
         "m" => 1048576,
         "g" => 1073741824
       }.freeze
+
+      extend TypeRegistry::InterfaceClassMethods
 
       attr_reader :remote_file_path, :byte_count, :source_input, :input_writer
 

@@ -104,6 +104,8 @@ module ManageIQ
           logger
         end
       end
+
+      register_file_storage FTP
     end
   end
 end

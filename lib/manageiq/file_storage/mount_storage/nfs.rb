@@ -42,6 +42,8 @@ module ManageIQ
           logger.info("#{log_header} Connecting to host: [#{@host}], share: [#{@mount_path}]...Complete")
         end
       end
+
+      register_file_storage NFS
     end
   end
 end
