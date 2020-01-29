@@ -104,7 +104,7 @@ describe ManageIQ::FileStorage do
       before { opts_for_fakefs }
 
       it "raises an ManageIQ::FileStorage::InvalidSchemeError" do
-        valid_schemes = ManageIQ::FileStorage.storage_interface_classes.keys
+        valid_schemes = ManageIQ::FileStorage::TypeRegistry.storage_interface_classes.keys
         error_class   = ManageIQ::FileStorage::InvalidSchemeError
         error_message = "foo is not a valid ManageIQ::FileStorage uri scheme. Accepted schemes are #{valid_schemes}"
 
