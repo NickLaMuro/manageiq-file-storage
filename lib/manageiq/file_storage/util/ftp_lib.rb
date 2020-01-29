@@ -5,7 +5,7 @@ require 'net/ftp'
 # Will setup a `@ftp` attr_accessor to be used as the return value for
 # `.connect`, the main method being provided in this class.
 module ManageIQ
-  class FileStorage
+  module FileStorage
     module Util
       module FtpLib
         def self.included(klass)

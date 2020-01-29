@@ -17,8 +17,7 @@ require 'logger'
 # subclasses, but they must conform to the top level interface.
 #
 module ManageIQ
-  # TODO:  Make this a module
-  class FileStorage
+  module FileStorage
     class InvalidSchemeError < ArgumentError
       def initialize(bad_scheme = nil)
         super(error_message(bad_scheme))

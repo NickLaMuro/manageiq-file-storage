@@ -7,7 +7,7 @@ require 'manageiq/file_storage/mount_storage'
 #
 # See ManageIQ::FileStorage::MountStorage for info on methods available.
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class MountStorage
       class Local < ManageIQ::FileStorage::MountStorage
         def self.uri_scheme

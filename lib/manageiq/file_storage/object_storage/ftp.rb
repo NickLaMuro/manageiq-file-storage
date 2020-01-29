@@ -4,7 +4,7 @@ require 'manageiq/file_storage/util/ftp_lib'
 require 'manageiq/file_storage/object_storage'
 
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class ObjectStorage
       class FTP < ManageIQ::FileStorage::ObjectStorage
         include Util::FtpLib
