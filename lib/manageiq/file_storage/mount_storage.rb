@@ -7,7 +7,7 @@ require 'uri'
 require 'manageiq/file_storage'
 
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class MountStorage < FileStorage::Interface
       require 'manageiq/file_storage/mount_storage/local'
       require 'manageiq/file_storage/mount_storage/nfs'

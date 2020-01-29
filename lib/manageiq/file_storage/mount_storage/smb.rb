@@ -1,7 +1,7 @@
 require 'manageiq/file_storage/mount_storage'
 
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class MountStorage
       class SMB < ManageIQ::FileStorage::MountStorage
         PORTS = [445, 139]

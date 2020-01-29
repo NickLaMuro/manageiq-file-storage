@@ -2,7 +2,7 @@ require 'net/protocol'
 require 'manageiq/file_storage'
 
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class ObjectStorage < ManageIQ::FileStorage::Interface
       require 'manageiq/file_storage/object_storage/s3'
       require 'manageiq/file_storage/object_storage/ftp'

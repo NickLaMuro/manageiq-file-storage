@@ -1,7 +1,7 @@
 require 'manageiq/file_storage/object_storage'
 
 module ManageIQ
-  class FileStorage
+  module FileStorage
     class ObjectStorage
       class S3 < ManageIQ::FileStorage::ObjectStorage
         attr_reader :bucket_name
