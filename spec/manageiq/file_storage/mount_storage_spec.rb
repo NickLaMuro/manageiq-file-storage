@@ -20,9 +20,6 @@ describe ManageIQ::FileStorage::MountStorage do
   it ".runcmd will retry with sudo if needed" do
     cmd = "mount X Y"
 
-    # TODO:  Delete me
-    RSpec::Mocks.configuration.allow_message_expectations_on_nil = true
-
     expect(described_class).to receive(:`).once.with("#{cmd} 2>&1")
     expect(described_class).to receive(:`).with("sudo #{cmd} 2>&1")
     expect($CHILD_STATUS).to receive(:exitstatus).once.and_return(1)
