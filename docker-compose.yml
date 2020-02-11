@@ -1,0 +1,22 @@
+version: "3.0"
+
+services:
+  nfs_server:
+    container_name: nfs_server
+    image: erichough/nfs-server:2.2.1
+    environment:
+      - "NFS_EXPORT_0=/var/nfs    *(rw,sync,no_root_squash,no_subtree_check)"
+    ports:
+      - "111:111"
+      - "111:111/udp"
+      - "2049:2049"
+      - "2049:2049/udp"
+      - "32765:32765"
+      - "32765:32765/udp"
+      - "32767:32767"
+      - "32767:32767/udp"
+    cap_add:
+      - SYS_ADMIN
+      - SYS_MODULE
+    volumes:
+      - /var/nfs:/var/nfs

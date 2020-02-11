@@ -1,0 +1,73 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require_relative 'scripts/mkdockercerts.rb'
+
+machine_ip = ENV['VAGRANT_DOCKER_MACHINE_IP'] || DockerMachineCertGenerator::DEFAULT_VM_IP
+
+DockerMachineCertGenerator.bootstrap(machine_ip)
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox"
+
+  config.vm.box = "maier/alpine-3.7-x86_64"
+  config.vm.guest = :tinycore  # hack to allow networking to be configured via vagrant
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true # disable `/vagrant` share
+
+  config.vm.network :private_network, :ip => machine_ip
+
+  # Upload Docker Daemon Certs
+  config.vm.provision "file", :source      => DockerMachineCertGenerator::CA_PATH,
+                              :destination => "$HOME/ca.pem"
+
+  config.vm.provision "file", :source      => DockerMachineCertGenerator::SERVER_CERT_PATH,
+                              :destination => "$HOME/server.pem"
+
+  config.vm.provision "file", :source      => DockerMachineCertGenerator::SERVER_KEY_PATH,
+                              :destination => "$HOME/server-key.pem"
+
+  config.vm.provision "bootstrap", :type => "shell",
+    :inline => <<-BOOTSTRAP.gsub(/ {6}/, '')
+      # ==========   [install docker]    ========== #
+
+      apk --no-cache add docker
+      rc-update add docker boot
+
+      # ==========   [configure certs]   ========== #
+
+      mkdir /var/lib/boot2docker
+      chmod 700 /var/lib/boot2docker
+
+      mv /home/vagrant/ca.pem         /var/lib/boot2docker/
+      mv /home/vagrant/server.pem     /var/lib/boot2docker/
+      mv /home/vagrant/server-key.pem /var/lib/boot2docker/
+
+      chmod 644 /var/lib/boot2docker/*.pem
+      chown root:root /var/lib/boot2docker/*.pem
+
+      # ==========  [configure dockerd]  ========== #
+
+      cat << ETC_CONFD_DOCKER >> /etc/conf.d/docker
+
+      # DOCKER_STORAGE=overlay2
+      DOCKER_OPTS="\\$DOCKER_OPTS --tlsverify"
+      DOCKER_OPTS="\\$DOCKER_OPTS --tlscacert=/var/lib/boot2docker/ca.pem"
+      DOCKER_OPTS="\\$DOCKER_OPTS --tlscert=/var/lib/boot2docker/server.pem"
+      DOCKER_OPTS="\\$DOCKER_OPTS --tlskey=/var/lib/boot2docker/server-key.pem"
+      DOCKER_OPTS="\\$DOCKER_OPTS -H unix://"
+      DOCKER_OPTS="\\$DOCKER_OPTS -H tcp://0.0.0.0:2376"
+      ETC_CONFD_DOCKER
+
+      # ==========   [start dockerd]     ========== #
+
+      service docker start
+
+      # ========== [enable kernel mods]  ========== #
+
+      modprobe nfs
+      modprobe nfsd
+
+    BOOTSTRAP
+end
+
