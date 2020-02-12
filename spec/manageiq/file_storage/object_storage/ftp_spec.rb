@@ -12,8 +12,8 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
 
       it "copies single files" do
         expect(subject.add(source_path.to_s, dest_path.to_s)).to eq(dest_path.to_s)
-        expect(dest_path).to exist_on_ftp_server
-        expect(dest_path).to have_size_on_ftp_server_of(ten_megabytes)
+        expect(dest_path).to exist_in_file_storage
+        expect(dest_path).to have_size_in_storage_of(ten_megabytes)
       end
 
       it "copies file to splits" do
@@ -26,8 +26,8 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
         end
 
         expected_splitfiles.each do |filename|
-          expect(filename).to exist_on_ftp_server
-          expect(filename).to have_size_on_ftp_server_of(two_megabytes)
+          expect(filename).to exist_in_file_storage
+          expect(filename).to have_size_in_storage_of(two_megabytes)
         end
       end
 
@@ -41,8 +41,8 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
         end
 
         expected_splitfiles.each do |filename|
-          expect(filename).to exist_on_ftp_server
-          expect(filename).to have_size_on_ftp_server_of(two_megabytes)
+          expect(filename).to exist_in_file_storage
+          expect(filename).to have_size_in_storage_of(two_megabytes)
         end
       end
 
@@ -58,13 +58,13 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
           subject.add(source_path, dest_path.to_s, one_megabyte)
 
           expected_splitfiles[0, 9].each do |filename|
-            expect(filename).to exist_on_ftp_server
-            expect(filename).to have_size_on_ftp_server_of(one_megabyte)
+            expect(filename).to exist_in_file_storage
+            expect(filename).to have_size_in_storage_of(one_megabyte)
           end
 
           last_split = expected_splitfiles.last
-          expect(last_split).to exist_on_ftp_server
-          expect(last_split).to have_size_on_ftp_server_of(one_megabyte - one_kilobyte)
+          expect(last_split).to exist_in_file_storage
+          expect(last_split).to have_size_in_storage_of(one_megabyte - one_kilobyte)
         end
       end
     end
@@ -95,8 +95,8 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
       subject.download(dest_path, source_path)
 
       # Sanity check that what we are downloading is the size we expect
-      expect(source_path).to exist_on_ftp_server
-      expect(source_path).to have_size_on_ftp_server_of(ten_megabytes)
+      expect(source_path).to exist_in_file_storage
+      expect(source_path).to have_size_in_storage_of(ten_megabytes)
 
       expect(File.exist?(dest_path)).to be true
       expect(File.stat(dest_path).size).to eq(ten_megabytes)
@@ -111,8 +111,8 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
       # Sanity check that what we are downloading is the size we expect
       # (and we didn't actually download the file to disk)
       expect(File.exist?(dest_path)).to be false
-      expect(source_path).to exist_on_ftp_server
-      expect(source_path).to have_size_on_ftp_server_of(ten_megabytes)
+      expect(source_path).to exist_in_file_storage
+      expect(source_path).to have_size_in_storage_of(ten_megabytes)
 
       # Nothing written, just printed the streamed file in the above command
       expect(source_data.size).to eq(ten_megabytes)
