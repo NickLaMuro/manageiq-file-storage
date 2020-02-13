@@ -140,7 +140,7 @@ describe ManageIQ::FileStorage::Util::FtpLib do
   end
 
   describe "#file_exists?", :with_ftp_server do
-    let(:existing_file) { File.basename(existing_ftp_file) }
+    let(:existing_file) { File.basename(existing_file_in_storage) }
 
     subject             { FTPKlass.new.tap { |ftp| ftp.uri = "ftp://localhost" } }
     before              { subject.connect(valid_ftp_creds) }
@@ -177,16 +177,15 @@ describe ManageIQ::FileStorage::Util::FtpLib do
 
     context "to an existing directory" do
       it "creates the nested directory without messing with the existing" do
-        existing_dir = existing_ftp_dir
-        new_dir      = File.join(existing_ftp_dir, "foo/bar/baz")
+        new_dir      = File.join(existing_file_storage_dir, "foo/bar/baz")
         parent_dir   = File.dirname(new_dir)
 
-        expect(subject.ftp.nlst.include?(existing_dir)).to      eq(true)
-        expect(subject.ftp.nlst(parent_dir).include?("baz")).to eq(false)
+        expect(subject.ftp.nlst.include?(existing_file_storage_dir)).to eq(true)
+        expect(subject.ftp.nlst(parent_dir).include?("baz")).to         eq(false)
 
         subject.send(:create_directory_structure, new_dir)
-        expect(subject.ftp.nlst.include?(existing_dir)).to      eq(true)
-        expect(subject.ftp.nlst(parent_dir).include?("baz")).to eq(true)
+        expect(subject.ftp.nlst.include?(existing_file_storage_dir)).to eq(true)
+        expect(subject.ftp.nlst(parent_dir).include?("baz")).to         eq(true)
       end
     end
   end

@@ -3,6 +3,8 @@ require "tmpdir"
 require "tempfile"
 require "fileutils"
 
+require "support/contexts/with_file_storage"
+
 class FtpSingletonServer
   class << self
     attr_reader :driver
@@ -30,7 +32,8 @@ class FtpSingletonServer
   end
 end
 
-class FTPServerDriver
+class FTPServerDriver < WithFileStorageInterface::Driver
+
   attr_reader :existing_file, :existing_dir
 
   def initialize
@@ -58,14 +61,48 @@ class FTPServerDriver
     @existing_dir ||= Dir.mktmpdir(nil, @ftp_dir).sub("#{@ftp_dir}/", "")
   end
 
+  def list_in_storage(file_or_dir)
+    with_connection do |ftp|
+      begin
+        ftp.nlst(to_path_string(file_or_dir))
+      rescue Net::FTPPermError
+        []
+      end
+    end
+  end
+
+  def size_in_storage(file_or_dir)
+    path = to_path_string(file_or_dir)
+    with_connection do |ftp|
+      begin
+        ftp.size(path)
+      rescue Net::FTPPermError
+        0
+      end
+    end
+  end
+
   private
 
   def create_tmp_dir
     @ftp_dir = Dir.mktmpdir
   end
+
+  def with_connection
+    Net::FTP.open("localhost") do |ftp|
+      ftp.login("ftpuser", "ftppass")
+      yield ftp
+    end
+  end
 end
 
 shared_context "with ftp server", :with_ftp_server do
+  include WithFileStorageInterface
+
+  def driver
+    FtpSingletonServer.driver
+  end
+
   before(:all) { FtpSingletonServer.run_ftp_server }
   after(:all)  { FtpSingletonServer.stop_ftp_server }
 
@@ -79,12 +116,4 @@ shared_context "with ftp server", :with_ftp_server do
   end
 
   let(:valid_ftp_creds) { { :username => "ftpuser", :password => "ftppass" } }
-
-  def existing_ftp_file(size = 0)
-    FtpSingletonServer.driver.create_existing_file(size)
-  end
-
-  def existing_ftp_dir
-    FtpSingletonServer.driver.create_existing_dir
-  end
 end
