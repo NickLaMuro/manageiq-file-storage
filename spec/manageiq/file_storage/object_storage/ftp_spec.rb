@@ -86,7 +86,7 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
     include_context "file sizes"
 
     let(:dest_path)   { Dir::Tmpname.create("") { |name| name } }
-    let(:source_file) { existing_ftp_file(ten_megabytes) }
+    let(:source_file) { existing_file_in_storage(ten_megabytes) }
     let(:source_path) { File.basename(source_file.path) }
 
     after { File.delete(dest_path) if File.exist?(dest_path) }
@@ -122,7 +122,7 @@ describe ManageIQ::FileStorage::ObjectStorage::FTP, :with_ftp_server do
   describe "#magic_number_for" do
     include_context "file sizes"
 
-    let(:source_file) { existing_ftp_file(ten_megabytes) }
+    let(:source_file) { existing_file_in_storage(ten_megabytes) }
     let(:source_path) { File.basename(source_file.path) }
 
     it "returns 256 bytes by default" do
