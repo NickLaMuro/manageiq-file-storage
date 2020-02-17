@@ -76,11 +76,12 @@ Vagrant.configure("2") do |config|
       # ==========   [testfile service]  ========== #
 
       mkdir /var/nfs
+      mkdir /var/smb
 
       cat << TESTFILE_SERVICE_INIT > /etc/init.d/testfile-server
       #!/sbin/openrc-run
       command="/usr/bin/ruby"
-      command_args="/home/vagrant/test_file_server.rb nfs"
+      command_args="/home/vagrant/test_file_server.rb nfs smb"
       command_background=true
       pidfile="/run/testfile-server.pid"
       LOGFILE="/var/log/testfile-server.log"
