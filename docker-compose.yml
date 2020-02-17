@@ -5,6 +5,7 @@ services:
     container_name: nfs_server
     image: erichough/nfs-server:2.2.1
     environment:
+      - "NFS_LOG_LEVEL=DEBUG"
       - "NFS_EXPORT_0=/var/nfs    *(rw,sync,no_root_squash,no_subtree_check)"
     ports:
       - "111:111"
