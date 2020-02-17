@@ -34,12 +34,15 @@ module ManageIQ
       end
 
       def self.runcmd(cmd_str)
+        puts "#{cmd_str} 2>&1"
         rv = `#{cmd_str} 2>&1`
 
         # If sudo is required, ensure you have /etc/sudoers.d/miq
         # Cmnd_Alias MOUNTALL = /bin/mount, /bin/umount
         # %wheel ALL = NOPASSWD: MOUNTALL
         if $CHILD_STATUS.exitstatus == 1 && cmd_str =~ /^(mount|umount) /
+        # if $? == 1 && cmd_str =~ /^(mount|umount) /
+          puts "SUDO"
           rv = `sudo #{cmd_str} 2>&1`
         end
 
