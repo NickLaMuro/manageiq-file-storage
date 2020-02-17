@@ -21,3 +21,15 @@ services:
       - SYS_MODULE
     volumes:
       - /var/nfs:/var/nfs
+  samba_server:
+    container_name: smb_server
+    image: dperson/samba
+    environment:
+      - "PERMISSIONS=true"
+      - "USER0=samba;samba"
+      - "SHARE0=share;/var/smb;yes;no;no;samba;samba;samba"
+    ports:
+      - "139:139"
+      - "445:445"
+    volumes:
+      - /var/smb:/var/smb
