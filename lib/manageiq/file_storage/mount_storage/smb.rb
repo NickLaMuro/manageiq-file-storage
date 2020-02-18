@@ -53,8 +53,20 @@ module ManageIQ
           logger.info("#{log_header} Connecting to host: [#{@host}], share: [#{@mount_path}], domain: [#{domain}], user: [#{user}], using mount point: [#{@mnt_point}]...")
           # mount -t cifs //192.168.252.140/temp /media/windows_share/ -o rw,username=jrafaniello,password=blah,domain=manageiq.com
 
-          # Quote the hostname and share and username since they have spaces in it
-          runcmd("#{mount} -t cifs '//#{File.join(@host, @mount_path)}' #{@mnt_point} -o rw,username='#{user}',password='#{@settings[:password]}',domain='#{domain}'")
+          # Quote the host:exported directory since the directory can have spaces in it
+          case Sys::Platform::IMPL
+          when :macosx
+            url  = "//"
+            url << "#{domain};" if domain != 'null'
+            url << "#{user}:#{@settings[:password]}@#{File.join(@host, @mount_path)}"
+
+            runcmd("#{mount} -o rw -t smbfs '#{url}' #{@mnt_point}")
+          when :linux
+            # Quote the hostname and share and username since they have spaces in it
+            runcmd("#{mount} -t cifs '//#{File.join(@host, @mount_path)}' #{@mnt_point} -o rw,username='#{user}',password='#{@settings[:password]}',domain='#{domain}'")
+          else
+            raise "platform not supported"
+          end
           logger.info("#{log_header} Connecting to host: [#{@host}], share: [#{@mount_path}]...Complete")
         end
       end
