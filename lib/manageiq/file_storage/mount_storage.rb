@@ -1,5 +1,6 @@
 # TODO:  Remove the need for `.blank?` maybe?
 require 'active_support/core_ext/object/blank'
+require 'English'
 require 'fileutils'
 require 'tempfile'
 require 'pathname'
